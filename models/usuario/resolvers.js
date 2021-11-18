@@ -1,14 +1,18 @@
-import { UserModel } from './usuario.js';
+import {
+  UserModel
+} from './usuario.js';
 
 const resolversUsuario = {
   Query: {
     Usuarios: async (parent, args) => {
-      console.log('parent usuario', parent);
+      // console.log('parent usuario', parent);
       const usuarios = await UserModel.find();
       return usuarios;
     },
     Usuario: async (parent, args) => {
-      const usuario = await UserModel.findOne({ _id: args._id });
+      const usuario = await UserModel.findOne({
+        _id: args._id
+      });
       return usuario;
     },
   },
@@ -42,14 +46,20 @@ const resolversUsuario = {
     },
     eliminarUsuario: async (parent, args) => {
       if (Object.keys(args).includes('_id')) {
-        const usuarioEliminado = await UserModel.findOneAndDelete({ _id: args._id });
+        const usuarioEliminado = await UserModel.findOneAndDelete({
+          _id: args._id
+        });
         return usuarioEliminado;
       } else if (Object.keys(args).includes('correo')) {
-        const usuarioEliminado = await UserModel.findOneAndDelete({ correo: args.correo });
+        const usuarioEliminado = await UserModel.findOneAndDelete({
+          correo: args.correo
+        });
         return usuarioEliminado;
       }
     },
   },
 };
 
-export { resolversUsuario };
+export {
+  resolversUsuario
+};

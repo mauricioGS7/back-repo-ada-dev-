@@ -31,7 +31,7 @@ const projectSchema = new Schema(
     },
     fechaFin: {
       type: Date,
-      required: true,
+      required: false,
     },
     estado: {
       type: String,
