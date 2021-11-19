@@ -1,21 +1,5 @@
-const resolvers = {
-  Query: {
-    Usuarios: async (parent, args) => {
-      const usuarios = [
-        {
-          nombre: 'Daniel',
-        },
-        {
-          nombre: 'Juan',
-        },
-        {
-          nombre: 'Pedro',
-        },
-      ];
+import { resolversProyecto } from '../models/proyecto/resolvers';
+import { resolversUsuario } from '../models/usuario/resolvers';
+import { resolversAvance } from '../models/avance/resolvers';
 
-      return usuarios;
-    },
-  },
-};
-
-export { resolvers };
+export const resolvers = [resolversUsuario, resolversProyecto, resolversAvance];
