@@ -1,11 +1,9 @@
 import { gql } from 'apollo-server-express';
 
 const tiposInscripcion = gql`
-  
   type Inscripcion {
     _id: ID!
-    estado: Enum_EstadoInscripcion
-    fechaInscripcion: Date
+    estado: Enum_EstadoInscripcion!
     fechaIngreso: Date
     fechaEgreso: Date
     proyecto: Proyecto!
@@ -13,23 +11,17 @@ const tiposInscripcion = gql`
   }
 
   type Query {
-    consultarInscripciones: [Inscripcion]
+    Inscripciones: [Inscripcion]
   }
 
   type Mutation {
     crearInscripcion(
+      estado: Enum_EstadoInscripcion!
       proyecto: String!
       estudiante: String!
     ): Inscripcion
 
-    aprobarInscripcion(
-      id: String!
-    ): Inscripcion
-
-    rechazarInscripcion(
-      id: String!
-    ): Inscripcion
-    
+    aprobarInscripcion(id: String!): Inscripcion
   }
 `;
 
