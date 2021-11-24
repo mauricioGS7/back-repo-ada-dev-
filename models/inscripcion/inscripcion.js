@@ -1,21 +1,23 @@
-import mongoose from 'mongoose';
-import { ProjectModel } from '../proyecto/proyecto.js';
-import { UserModel } from '../usuario/usuario.js';
+import mongoose from "mongoose";
+import { ProjectModel } from "../proyecto/proyecto.js";
+import { UserModel } from "../usuario/usuario.js";
 
 const { Schema, model } = mongoose;
 
 const inscriptionSchema = new Schema({
   estado: {
     type: String,
-    enum: ['ACEPTADO', 'RECHAZADO', 'PENDIENTE'],
-    default: 'PENDIENTE',
+    enum: ["ACEPTADO", "RECHAZADO", "PENDIENTE"],
+    default: "PENDIENTE",
     required: false,
   },
+
   fechaInscripcion: {
     type: Date,
     required: false,
-    default: Date.now
+    default: Date.now,
   },
+
   fechaIngreso: {
     type: Date,
     required: false,
@@ -36,6 +38,6 @@ const inscriptionSchema = new Schema({
   },
 });
 
-const InscriptionModel = model('Inscripcion', inscriptionSchema);
+const InscriptionModel = model("Inscripcion", inscriptionSchema);
 
 export { InscriptionModel };

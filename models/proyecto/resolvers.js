@@ -1,9 +1,11 @@
-import { ProjectModel } from './proyecto.js';
+import { ProjectModel } from "./proyecto.js";
 
 const resolversProyecto = {
   Query: {
     Proyectos: async (parent, args) => {
-      const proyectos = await ProjectModel.find().populate('avances').populate('inscripciones');
+      const proyectos = await ProjectModel.find()
+        .populate("avances")
+        .populate("inscripciones");
       return proyectos;
     },
   },
@@ -14,7 +16,6 @@ const resolversProyecto = {
         estado: args.estado,
         fase: args.fase,
         fechaInicio: args.fechaInicio,
-        fechaFin: args.fechaFin,
         presupuesto: args.presupuesto,
         lider: args.lider,
         objetivos: args.objetivos,

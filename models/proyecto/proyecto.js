@@ -1,7 +1,20 @@
-import mongoose from 'mongoose';
-import { ObjectiveModel } from '../objective.js';
-import { UserModel } from '../usuario/usuario.js';
+import mongoose from "mongoose";
+// import { Enum_EstadoProyecto, Enum_FaseProyecto, Enum_TipoObjetivo } from '../enums/enums.js';
+import { ObjectiveModel } from "../objective.js";
+import { UserModel } from "../usuario/usuario.js";
 const { Schema, model } = mongoose;
+
+// interface Proyecto {
+//   nombre: string;
+//   presupuesto: number;
+//   fechaInicio: Date;
+//   fechaFin: Date;
+//   estado: Enum_EstadoProyecto;
+//   fase: Enum_FaseProyecto;
+//   lider: Schema.Types.ObjectId;
+//   objetivos: [{ descripcion: String; tipo: Enum_TipoObjetivo }];
+// }
+
 const projectSchema = new Schema(
   {
     nombre: {
@@ -18,17 +31,17 @@ const projectSchema = new Schema(
     },
     fechaFin: {
       type: Date,
-      required: true,
+      required: false,
     },
     estado: {
       type: String,
-      enum: ['ACTIVO', 'INACTIVO'],
-      default: 'INACTIVO',
+      enum: ["ACTIVO", "INACTIVO"],
+      default: "INACTIVO",
     },
     fase: {
       type: String,
-      enum: ['INICIADO', 'DESARROLLO', 'TERMINADO', 'NULO'],
-      default: 'NULO',
+      enum: ["INICIADO", "DESARROLLO", "TERMINADO", "NULO"],
+      default: "NULO",
     },
     lider: {
       type: Schema.Types.ObjectId,
@@ -43,7 +56,7 @@ const projectSchema = new Schema(
         },
         tipo: {
           type: String,
-          enum: ['GENERAL', 'ESPECIFICO'],
+          enum: ["GENERAL", "ESPECIFICO"],
           required: true,
         },
       },
@@ -55,18 +68,18 @@ const projectSchema = new Schema(
   }
 );
 
-projectSchema.virtual('avances', {
-  ref: 'Avance',
-  localField: '_id',
-  foreignField: 'proyecto',
+projectSchema.virtual("avances", {
+  ref: "Avance",
+  localField: "_id",
+  foreignField: "proyecto",
 });
 
-projectSchema.virtual('inscripciones', {
-  ref: 'Inscripcion',
-  localField: '_id',
-  foreignField: 'proyecto',
+projectSchema.virtual("inscripciones", {
+  ref: "Inscripcion",
+  localField: "_id",
+  foreignField: "proyecto",
 });
 
-const ProjectModel = model('Proyecto', projectSchema);
+const ProjectModel = model("Proyecto", projectSchema);
 
 export { ProjectModel };
