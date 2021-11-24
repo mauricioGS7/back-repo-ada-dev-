@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-// import { Enum_EstadoInscripcion } from '../enums/enums.js';
 import { ProjectModel } from "../proyecto/proyecto.js";
 import { UserModel } from "../usuario/usuario.js";
 
@@ -10,8 +9,15 @@ const inscriptionSchema = new Schema({
     type: String,
     enum: ["ACEPTADO", "RECHAZADO", "PENDIENTE"],
     default: "PENDIENTE",
-    required: true,
+    required: false,
   },
+
+  fechaInscripcion: {
+    type: Date,
+    required: false,
+    default: Date.now,
+  },
+
   fechaIngreso: {
     type: Date,
     required: false,
