@@ -30,8 +30,20 @@ const resolversAvance = {
         descripcion: args.descripcion,
         proyecto: args.proyecto,
         creadoPor: args.creadoPor,
+        observaciones: args.observaciones,
       });
       return avanceCreado;
+    },
+    editarAvance: async (parents, args) => {
+      const avanceEditado = ModeloAvance.findByIdAndUpdate(
+        args._id,
+        {
+          descripcion: args.descripcion,
+          observaciones: args.observaciones,
+        },
+        { new: true }
+      );
+      return avanceEditado;
     },
   },
 };
