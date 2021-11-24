@@ -13,11 +13,9 @@ const avanceSchema = new Schema({
     type: String,
     required: true,
   },
-  observaciones: [
-    {
-      type: String,
-    },
-  ],
+  observaciones: {
+    type: String,
+  },
   proyecto: {
     type: Schema.Types.ObjectId,
     ref: ProjectModel,
