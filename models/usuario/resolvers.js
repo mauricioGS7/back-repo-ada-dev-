@@ -63,6 +63,22 @@ const resolversUsuario = {
         return usuarioEliminado;
       }
     },
+    actualizarPassword: async (parent, args) => {
+      const usuarioEcontrado = await UserModel.findOne({ correo: args.correo });
+      if (await bcrypt.compare(args.password, usuarioEcontrado.password)) {
+        const salt = await bcrypt.genSalt(10);
+        console.log("Usuario encontrado");
+        bcrypt.hash(args.nuevapassword, salt, async (err, hash) => {
+          const actualizarPassword= await UserModel.findOneAndUpdate({correo: args.correo}, {password : `${hash}`},{new:true});
+          return {Mensaje: "Contraseña actualizada"};
+        });
+      }else{
+        console.log("La contraseña no coincide")
+        return{
+          Mensaje: "La contraseña no coincide"
+        }
+      }
+    },
   },
 };
 
