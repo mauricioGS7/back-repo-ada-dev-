@@ -43,6 +43,10 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  password: {
+    type: String,
+    required: true,
+  },
   rol: {
     type: String,
     required: true,
@@ -53,6 +57,29 @@ const userSchema = new Schema({
     enum: ['PENDIENTE', 'AUTORIZADO', 'NO_AUTORIZADO'],
     default: 'PENDIENTE',
   },
+},
+  {
+    toJSON: { virtuals: true }, // So `res.json()` and other `JSON.stringify()` functions include virtuals
+    toObject: { virtuals: true }, // So `console.log()` and other functions that use `toObject()` include virtuals
+  }
+);
+
+userSchema.virtual('proyectos',{
+  ref:'Proyecto',
+  localField: '_id',
+  foreignField: 'lider',
+});
+
+userSchema.virtual('inscripciones',{
+  ref:'Inscripcion',
+  localField: '_id',
+  foreignField: 'estudiante',
+});
+
+userSchema.virtual('avances',{
+  ref:'Avance',
+  localField: '_id',
+  foreignField: 'creadoPor',
 });
 
 const UserModel = model('User', userSchema);
