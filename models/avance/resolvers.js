@@ -15,7 +15,7 @@ const resolversAvance = {
         .populate("creadoPor");
       return avance;
     },
-    filtrarAvance: async (parents, args) => {
+    AvancePorProyecto: async (parents, args) => {
       const avanceFiltradoProyecto = await ModeloAvance.find({
         proyecto: args.idProyecto,
       })
@@ -26,13 +26,17 @@ const resolversAvance = {
   },
   Mutation: {
     crearAvance: async (parents, args) => {
+      // consulto el proyecto para saber la fase en la que se encuentra
       const proyecto = await ProjectModel.findById({
         _id: args.proyecto,
       });
 
-      if (proyecto.fase === "TERMINADO") {
+      //si la fase es TERMINADO o NULO no puedo agregar avances
+      if (proyecto.fase === "TERMINADO" || proyecto.fase === "NULO") {
         return null;
-      } else if (proyecto.fase === "NULO" || proyecto.fase === "INICIADO") {
+      }
+      // si la fase es INICIADO creo el avance y cambio la fase a DESARROLLO
+      else if (proyecto.fase === "INICIADO") {
         const avanceCreado = await ModeloAvance.create({
           fechaAvance: new Date(),
           descripcion: args.descripcion,
@@ -40,7 +44,7 @@ const resolversAvance = {
           creadoPor: args.creadoPor,
           observaciones: args.observaciones,
         });
-
+        //cambio de la fase a DESARROLLO
         const proyectoEditado = await ProjectModel.findByIdAndUpdate(
           args.proyecto,
           {
@@ -48,10 +52,10 @@ const resolversAvance = {
           },
           { new: true }
         );
-        // console.log("proyectoEditado", proyectoEditado);
-
         return avanceCreado;
-      } else {
+      }
+      // si la fase es DESARROLLO crea el avance normalmente
+      else {
         const avanceCreado = await ModeloAvance.create({
           fechaAvance: new Date(),
           descripcion: args.descripcion,
