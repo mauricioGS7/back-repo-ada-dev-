@@ -64,22 +64,22 @@ const userSchema = new Schema({
   }
 );
 
-userSchema.virtual('proyectos',{
-  ref:'Proyecto',
+userSchema.virtual('proyectosLiderados', {
+  ref: 'Proyecto',
   localField: '_id',
   foreignField: 'lider',
 });
 
-userSchema.virtual('inscripciones',{
-  ref:'Inscripcion',
-  localField: '_id',
-  foreignField: 'estudiante',
-});
-
-userSchema.virtual('avances',{
-  ref:'Avance',
+userSchema.virtual('avancesCreados', {
+  ref: 'Avance',
   localField: '_id',
   foreignField: 'creadoPor',
+});
+
+userSchema.virtual('inscripciones', {
+  ref: 'Inscripcion',
+  localField: '_id',
+  foreignField: 'estudiante',
 });
 
 const UserModel = model('User', userSchema);
