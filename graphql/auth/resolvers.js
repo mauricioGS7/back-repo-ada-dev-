@@ -31,16 +31,21 @@ const resolversAutenticacion = {
     login: async (parent, args) => {
       const usuarioEcontrado = await UserModel.findOne({ correo: args.correo });
       if (await bcrypt.compare(args.password, usuarioEcontrado.password)) {
-        return {
-          token: generateToken({
-            _id: usuarioEcontrado._id,
-            nombre: usuarioEcontrado.nombre,
-            apellido: usuarioEcontrado.apellido,
-            identificacion: usuarioEcontrado.identificacion,
-            correo: usuarioEcontrado.correo,
-            rol: usuarioEcontrado.rol,
-          }),
-        };
+        if (usuarioEcontrado.estado === "PENDIENTE" || usuarioEcontrado.estado === "NO AUTORIZADO") {
+          return { Mensaje: "No estás autorizado para ingresar" }
+        } else {
+          return {
+            token: generateToken({
+              _id: usuarioEcontrado._id,
+              nombre: usuarioEcontrado.nombre,
+              apellido: usuarioEcontrado.apellido,
+              identificacion: usuarioEcontrado.identificacion,
+              correo: usuarioEcontrado.correo,
+              rol: usuarioEcontrado.rol,
+              estado: usuarioEcontrado.estado,
+            }),
+          };
+        }
       }
     },
 
