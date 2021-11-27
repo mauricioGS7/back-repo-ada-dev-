@@ -1,3 +1,4 @@
+import { InscriptionModel } from "../inscripcion/inscripcion.js";
 import { ProjectModel } from "../proyecto/proyecto.js";
 import { ModeloAvance } from "./avance.js";
 
@@ -29,10 +30,25 @@ const resolversAvance = {
       // consulto el proyecto para saber la fase en la que se encuentra
       const proyecto = await ProjectModel.findById({
         _id: args.proyecto,
+      }).populate("inscripciones");
+
+      //buscamos en el proyecto si exite la inscripcion, si existe guardamos el id, el id del estudtiena
+      let idInscripcion, idEstudiante, estadoInscripcion;
+      proyecto.inscripciones.forEach((element) => {
+        if (element.estudiante + "" === args.creadoPor) {
+          estadoInscripcion = element.estado;
+          console.log("estado inscp", estadoInscripcion);
+        }
       });
 
-      //si la fase es TERMINADO o NULO no puedo agregar avances
-      if (proyecto.fase === "TERMINADO" || proyecto.fase === "NULO") {
+      //si la fase es TERMINADO o NULO, o estado de la inscripcion es PENDIENTE o RECHAZADO no puedo agregar avances
+      if (
+        proyecto.fase === "TERMINADO" ||
+        proyecto.fase === "NULO" ||
+        proyecto.estado === "INACTIVO" ||
+        estadoInscripcion === "PENDIENTE" ||
+        estadoInscripcion === "RECHAZADO"
+      ) {
         return null;
       }
       // si la fase es INICIADO creo el avance y cambio la fase a DESARROLLO
