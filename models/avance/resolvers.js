@@ -1,4 +1,3 @@
-import { InscriptionModel } from "../inscripcion/inscripcion.js";
 import { ProjectModel } from "../proyecto/proyecto.js";
 import { ModeloAvance } from "./avance.js";
 
@@ -24,18 +23,26 @@ const resolversAvance = {
         .populate("creadoPor");
       return avanceFiltradoProyecto;
     },
+    ProyectosInscritos: async (parent, args) => {
+      const proyectoFiltradoInscripcion = await ProjectModel.find({
+        _id: args.idEstudiante,
+      })
+        .populate("inscripciones")
+        .populate("estudiante");
+      return proyectoFiltradoInscripcion;
+    },
   },
   Mutation: {
-    crearAvance: async (parents, args) => {
+    crearAvance: async (parents, args, context) => {
       // consulto el proyecto para saber la fase en la que se encuentra
       const proyecto = await ProjectModel.findById({
         _id: args.proyecto,
       }).populate("inscripciones");
 
       //buscamos en el proyecto si exite la inscripcion, si existe guardamos el id, el id del estudtiena
-      let idInscripcion, idEstudiante, estadoInscripcion;
+      let estadoInscripcion;
       proyecto.inscripciones.forEach((element) => {
-        if (element.estudiante + "" === args.creadoPor) {
+        if (element.estudiante + "" === context.userData._id) {
           estadoInscripcion = element.estado;
           console.log("estado inscp", estadoInscripcion);
         }
@@ -57,7 +64,7 @@ const resolversAvance = {
           fechaAvance: new Date(),
           descripcion: args.descripcion,
           proyecto: args.proyecto,
-          creadoPor: args.creadoPor,
+          creadoPor: context.userData._id,
           observaciones: args.observaciones,
         });
         //cambio de la fase a DESARROLLO
@@ -76,7 +83,7 @@ const resolversAvance = {
           fechaAvance: new Date(),
           descripcion: args.descripcion,
           proyecto: args.proyecto,
-          creadoPor: args.creadoPor,
+          creadoPor: context.userData._id,
           observaciones: args.observaciones,
         });
         return avanceCreado;
