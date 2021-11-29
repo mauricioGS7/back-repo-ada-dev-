@@ -13,6 +13,9 @@ const tiposUsuario = gql`
     avancesCreados: [Avance]
     proyectosLiderados: [Proyecto]
   }
+  type Password{
+    mensaje: Boolean!
+  }
   type Query {
     Usuarios: [Usuario]
     Usuario(_id: String!): Usuario
@@ -41,7 +44,7 @@ const tiposUsuario = gql`
       correo: String! 
       password: String!
       nuevapassword: String! 
-    ): Usuario
+    ): Password
   }
 `;
 

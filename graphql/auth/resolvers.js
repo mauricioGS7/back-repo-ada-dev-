@@ -30,22 +30,29 @@ const resolversAutenticacion = {
 
     login: async (parent, args) => {
       const usuarioEcontrado = await UserModel.findOne({ correo: args.correo });
-      if (await bcrypt.compare(args.password, usuarioEcontrado.password)) {
-        if (usuarioEcontrado.estado === "PENDIENTE" || usuarioEcontrado.estado === "NO AUTORIZADO") {
-          return { Mensaje: "No estás autorizado para ingresar" }
-        } else {
-          return {
-            token: generateToken({
-              _id: usuarioEcontrado._id,
-              nombre: usuarioEcontrado.nombre,
-              apellido: usuarioEcontrado.apellido,
-              identificacion: usuarioEcontrado.identificacion,
-              correo: usuarioEcontrado.correo,
-              rol: usuarioEcontrado.rol,
-              estado: usuarioEcontrado.estado,
-            }),
-          };
+      if(usuarioEcontrado)
+      {
+        if (await bcrypt.compare(args.password, usuarioEcontrado.password)) {
+          if (usuarioEcontrado.estado === "PENDIENTE" || usuarioEcontrado.estado === "NO AUTORIZADO") {
+            return { error: "No estás autorizado para ingresar" }
+          } else {
+            return {
+              token: generateToken({
+                _id: usuarioEcontrado._id,
+                nombre: usuarioEcontrado.nombre,
+                apellido: usuarioEcontrado.apellido,
+                identificacion: usuarioEcontrado.identificacion,
+                correo: usuarioEcontrado.correo,
+                rol: usuarioEcontrado.rol,
+                estado: usuarioEcontrado.estado,
+              }),
+            };
+          }
+        }else{
+          return{error : "Contraseña incorrecta"}
         }
+      }else{
+        return {error : "Usuario no encontrado"}
       }
     },
 
@@ -56,14 +63,16 @@ const resolversAutenticacion = {
           error: 'token no valido',
         };
       } else {
+        const usuarioEcontrado = await UserModel.findOne({ correo: context.userData.correo });
         return {
           token: generateToken({
-            _id: context.userData._id,
-            nombre: context.userData.nombre,
-            apellido: context.userData.apellido,
-            identificacion: context.userData.identificacion,
-            correo: context.userData.correo,
-            rol: context.userData.rol,
+            _id: usuarioEcontrado._id,
+            nombre: usuarioEcontrado.nombre,
+            apellido: usuarioEcontrado.apellido,
+            identificacion: usuarioEcontrado.identificacion,
+            correo: usuarioEcontrado.correo,
+            rol: usuarioEcontrado.rol,
+            estado: usuarioEcontrado.estado,
           }),
         };
       }
