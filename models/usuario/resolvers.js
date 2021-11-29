@@ -1,14 +1,20 @@
-import { UserModel } from './usuario.js';
-import bcrypt from 'bcrypt';
+import { UserModel } from "./usuario.js";
+import bcrypt from "bcrypt";
 
 const resolversUsuario = {
   Query: {
     Usuarios: async (parent, args) => {
-      const usuarios = await UserModel.find().populate("proyectos").populate("inscripciones").populate("avances");
+      const usuarios = await UserModel.find()
+        .populate("proyectos")
+        .populate("inscripciones")
+        .populate("avances");
       return usuarios;
     },
     Usuario: async (parent, args) => {
-      const usuario = await UserModel.findOne({ _id: args._id }).populate("proyectos").populate("inscripciones").populate("avances");
+      const usuario = await UserModel.findOne({ _id: args._id })
+        .populate("proyectos")
+        .populate("inscripciones")
+        .populate("avances");
       return usuario;
     },
   },

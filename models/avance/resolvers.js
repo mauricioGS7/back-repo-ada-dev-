@@ -15,7 +15,7 @@ const resolversAvance = {
         .populate("creadoPor");
       return avance;
     },
-    filtrarAvance: async (parents, args) => {
+    AvancePorProyecto: async (parents, args) => {
       const avanceFiltradoProyecto = await ModeloAvance.find({
         proyecto: args.idProyecto,
       })
@@ -23,55 +23,118 @@ const resolversAvance = {
         .populate("creadoPor");
       return avanceFiltradoProyecto;
     },
+    AvancePorUsuario: async (parents, args) => {
+      const avanceFiltradoUsuario = await ModeloAvance.find({
+        creadoPor: args._id,
+      })
+        .populate("proyecto")
+        .populate("creadoPor");
+      return avanceFiltradoUsuario;
+    },
+
+    ProyectosInscritos: async (parent, args) => {
+      try {
+        const proyectoFiltradoInscripcion = await ProjectModel.find().populate([
+          {
+            path: "inscripciones",
+            populate: {
+              path: "estudiante",
+              match: { _id: "61a246dcb1cf40a604a60d75" },
+            },
+          },
+        ]);
+        return proyectoFiltradoInscripcion;
+      } catch (error) {
+        console.log("hay nulos");
+      }
+    },
   },
   Mutation: {
-    crearAvance: async (parents, args) => {
+    crearAvance: async (parents, args, context) => {
+      // consulto el proyecto para saber la fase en la que se encuentra
       const proyecto = await ProjectModel.findById({
         _id: args.proyecto,
-      });
+      }).populate("inscripciones");
 
-      if (proyecto.fase === "TERMINADO") {
+      //buscamos en el proyecto si exite la inscripcion, si no tiene inscripciones el proyecto, retornamos null
+      let estadoInscripcion;
+      if (proyecto.inscripciones.length === 0) {
+        // no hay inscripciones
         return null;
-      } else if (proyecto.fase === "NULO" || proyecto.fase === "INICIADO") {
+      } else {
+        // si existen inscripciones, recorremos buscando el estudiante, si no existe retornamos null
+        proyecto.inscripciones.forEach((element) => {
+          console.log("element", element);
+          if (element.estudiante + "" === context.userData._id) {
+            estadoInscripcion = element.estado;
+            console.log("estado inscp", estadoInscripcion);
+          } else {
+            console.log("NO INSCRITO");
+            estadoInscripcion = null;
+          }
+        });
+      }
+
+      //si la fase es TERMINADO o NULO, o estado de la inscripcion es PENDIENTE o RECHAZADO no puedo agregar avances
+      if (
+        estadoInscripcion === null ||
+        estadoInscripcion === "RECHAZADO" ||
+        estadoInscripcion === "PENDIENTE" ||
+        proyecto.fase === "TERMINADO" ||
+        proyecto.fase === "NULO" ||
+        proyecto.estado === "INACTIVO"
+      ) {
+        return null;
+      }
+      // si la fase es INICIADO creo el avance y cambio la fase a DESARROLLO
+      else if (proyecto.fase === "INICIADO") {
         const avanceCreado = await ModeloAvance.create({
           fechaAvance: new Date(),
           descripcion: args.descripcion,
           proyecto: args.proyecto,
-          creadoPor: args.creadoPor,
+          creadoPor: context.userData._id,
           observaciones: args.observaciones,
         });
-
-        const proyectoEditado = await ProjectModel.findByIdAndUpdate(
+        //cambio de la fase a DESARROLLO
+        const proyectoEditadoPorAvance = await ProjectModel.findByIdAndUpdate(
           args.proyecto,
           {
             fase: "DESARROLLO",
           },
           { new: true }
         );
-        // console.log("proyectoEditado", proyectoEditado);
-
         return avanceCreado;
-      } else {
+      }
+      // si la fase es DESARROLLO crea el avance normalmente
+      else {
         const avanceCreado = await ModeloAvance.create({
           fechaAvance: new Date(),
           descripcion: args.descripcion,
           proyecto: args.proyecto,
-          creadoPor: args.creadoPor,
+          creadoPor: context.userData._id,
           observaciones: args.observaciones,
         });
         return avanceCreado;
       }
     },
     editarAvance: async (parents, args) => {
-      const avanceEditado = await ModeloAvance.findByIdAndUpdate(
-        args._id,
-        {
-          descripcion: args.descripcion,
-          observaciones: args.observaciones,
-        },
-        { new: true }
-      );
-      return avanceEditado;
+      const proyecto = await ProjectModel.findOne({
+        nombre: args.proyecto,
+      });
+
+      if (proyecto.fase === "TERMINADO" || proyecto.estado === "INACTIVO") {
+        return null;
+      } else {
+        const avanceEditado = await ModeloAvance.findByIdAndUpdate(
+          args._id,
+          {
+            descripcion: args.descripcion,
+            observaciones: args.observaciones,
+          },
+          { new: true }
+        );
+        return avanceEditado;
+      }
     },
   },
 };
