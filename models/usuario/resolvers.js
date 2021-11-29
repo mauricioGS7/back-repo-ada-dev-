@@ -1,14 +1,20 @@
-import { UserModel } from './usuario.js';
-import bcrypt from 'bcrypt';
+import { UserModel } from "./usuario.js";
+import bcrypt from "bcrypt";
 
 const resolversUsuario = {
   Query: {
     Usuarios: async (parent, args) => {
-      const usuarios = await UserModel.find().populate("proyectos").populate("inscripciones").populate("avances");
+      const usuarios = await UserModel.find()
+        .populate("proyectos")
+        .populate("inscripciones")
+        .populate("avances");
       return usuarios;
     },
     Usuario: async (parent, args) => {
-      const usuario = await UserModel.findOne({ _id: args._id }).populate("proyectos").populate("inscripciones").populate("avances");
+      const usuario = await UserModel.findOne({ _id: args._id })
+        .populate("proyectos")
+        .populate("inscripciones")
+        .populate("avances");
       return usuario;
     },
   },
@@ -61,6 +67,26 @@ const resolversUsuario = {
           correo: args.correo,
         });
         return usuarioEliminado;
+      }
+    },
+    actualizarPassword: async (parent, args) => {
+      const usuarioEcontrado = await UserModel.findOne({ correo: args.correo });
+      if (await bcrypt.compare(args.password, usuarioEcontrado.password)) {
+        const salt = await bcrypt.genSalt(10);
+        console.log("Usuario encontrado");
+        bcrypt.hash(args.nuevapassword, salt, async (err, hash) => {
+          const actualizarPassword = await UserModel.findOneAndUpdate(
+            { correo: args.correo },
+            { password: `${hash}` },
+            { new: true }
+          );
+          return { Mensaje: "Contraseña actualizada" };
+        });
+      } else {
+        console.log("La contraseña no coincide");
+        return {
+          Mensaje: "La contraseña no coincide",
+        };
       }
     },
   },

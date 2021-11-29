@@ -1,6 +1,6 @@
-import { UserModel } from '../../models/usuario/usuario.js';
-import bcrypt from 'bcrypt';
-import { generateToken } from '../../utils/tokenUtils.js';
+import { UserModel } from "../../models/usuario/usuario.js";
+import bcrypt from "bcrypt";
+import { generateToken } from "../../utils/tokenUtils.js";
 
 const resolversAutenticacion = {
   Mutation: {
@@ -15,7 +15,7 @@ const resolversAutenticacion = {
         rol: args.rol,
         password: hashedPassword,
       });
-      console.log('usuario creado', usuarioCreado);
+      console.log("usuario creado", usuarioCreado);
       return {
         token: generateToken({
           _id: usuarioCreado._id,
@@ -26,6 +26,49 @@ const resolversAutenticacion = {
           rol: usuarioCreado.rol,
         }),
       };
+    },
+
+    login: async (parent, args) => {
+      const usuarioEcontrado = await UserModel.findOne({ correo: args.correo });
+      if (await bcrypt.compare(args.password, usuarioEcontrado.password)) {
+        if (usuarioEcontrado.estado === "PENDIENTE" || usuarioEcontrado.estado === "NO AUTORIZADO") {
+          return { Mensaje: "No estás autorizado para ingresar" }
+        } else {
+          return {
+            token: generateToken({
+              _id: usuarioEcontrado._id,
+              nombre: usuarioEcontrado.nombre,
+              apellido: usuarioEcontrado.apellido,
+              identificacion: usuarioEcontrado.identificacion,
+              correo: usuarioEcontrado.correo,
+              rol: usuarioEcontrado.rol,
+              estado: usuarioEcontrado.estado,
+            }),
+          };
+        }
+      }
+    },
+
+    refreshToken: async (parent, args, context) => {
+      console.log("contexto", context);
+      if (!context.userData) {
+        return {
+          error: "token no valido",
+        };
+      } else {
+        return {
+          token: generateToken({
+            _id: context.userData._id,
+            nombre: context.userData.nombre,
+            apellido: context.userData.apellido,
+            identificacion: context.userData.identificacion,
+            correo: context.userData.correo,
+            rol: context.userData.rol,
+          }),
+        };
+      }
+      // valdiar que el contexto tenga info del usuario. si si, refrescar el token
+      // si no devolver null para que en el front redirija al login.
     },
   },
 };
