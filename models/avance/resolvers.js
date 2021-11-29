@@ -55,7 +55,6 @@ const resolversAvance = {
       const proyecto = await ProjectModel.findById({
         _id: args.proyecto,
       }).populate("inscripciones");
-      console.log("incrips", proyecto.inscripciones.length);
 
       //buscamos en el proyecto si exite la inscripcion, si no tiene inscripciones el proyecto, retornamos null
       let estadoInscripcion;
@@ -97,7 +96,7 @@ const resolversAvance = {
           observaciones: args.observaciones,
         });
         //cambio de la fase a DESARROLLO
-        const proyectoEditado = await ProjectModel.findByIdAndUpdate(
+        const proyectoEditadoPorAvance = await ProjectModel.findByIdAndUpdate(
           args.proyecto,
           {
             fase: "DESARROLLO",
@@ -119,15 +118,23 @@ const resolversAvance = {
       }
     },
     editarAvance: async (parents, args) => {
-      const avanceEditado = await ModeloAvance.findByIdAndUpdate(
-        args._id,
-        {
-          descripcion: args.descripcion,
-          observaciones: args.observaciones,
-        },
-        { new: true }
-      );
-      return avanceEditado;
+      const proyecto = await ProjectModel.findOne({
+        nombre: args.proyecto,
+      });
+
+      if (proyecto.fase === "TERMINADO" || proyecto.estado === "INACTIVO") {
+        return null;
+      } else {
+        const avanceEditado = await ModeloAvance.findByIdAndUpdate(
+          args._id,
+          {
+            descripcion: args.descripcion,
+            observaciones: args.observaciones,
+          },
+          { new: true }
+        );
+        return avanceEditado;
+      }
     },
   },
 };
