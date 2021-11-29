@@ -23,13 +23,30 @@ const resolversAvance = {
         .populate("creadoPor");
       return avanceFiltradoProyecto;
     },
-    ProyectosInscritos: async (parent, args) => {
-      const proyectoFiltradoInscripcion = await ProjectModel.find({
-        _id: args.idEstudiante,
+    AvancePorUsuario: async (parents, args) => {
+      const avanceFiltradoUsuario = await ModeloAvance.find({
+        creadoPor: args._id,
       })
-        .populate("inscripciones")
-        .populate("estudiante");
-      return proyectoFiltradoInscripcion;
+        .populate("proyecto")
+        .populate("creadoPor");
+      return avanceFiltradoUsuario;
+    },
+
+    ProyectosInscritos: async (parent, args) => {
+      try {
+        const proyectoFiltradoInscripcion = await ProjectModel.find().populate([
+          {
+            path: "inscripciones",
+            populate: {
+              path: "estudiante",
+              match: { _id: "61a246dcb1cf40a604a60d75" },
+            },
+          },
+        ]);
+        return proyectoFiltradoInscripcion;
+      } catch (error) {
+        console.log("hay nulos");
+      }
     },
   },
   Mutation: {
@@ -38,23 +55,35 @@ const resolversAvance = {
       const proyecto = await ProjectModel.findById({
         _id: args.proyecto,
       }).populate("inscripciones");
+      console.log("incrips", proyecto.inscripciones.length);
 
-      //buscamos en el proyecto si exite la inscripcion, si existe guardamos el id, el id del estudtiena
+      //buscamos en el proyecto si exite la inscripcion, si no tiene inscripciones el proyecto, retornamos null
       let estadoInscripcion;
-      proyecto.inscripciones.forEach((element) => {
-        if (element.estudiante + "" === context.userData._id) {
-          estadoInscripcion = element.estado;
-          console.log("estado inscp", estadoInscripcion);
-        }
-      });
+      if (proyecto.inscripciones.length === 0) {
+        // no hay inscripciones
+        return null;
+      } else {
+        // si existen inscripciones, recorremos buscando el estudiante, si no existe retornamos null
+        proyecto.inscripciones.forEach((element) => {
+          console.log("element", element);
+          if (element.estudiante + "" === context.userData._id) {
+            estadoInscripcion = element.estado;
+            console.log("estado inscp", estadoInscripcion);
+          } else {
+            console.log("NO INSCRITO");
+            estadoInscripcion = null;
+          }
+        });
+      }
 
       //si la fase es TERMINADO o NULO, o estado de la inscripcion es PENDIENTE o RECHAZADO no puedo agregar avances
       if (
+        estadoInscripcion === null ||
+        estadoInscripcion === "RECHAZADO" ||
+        estadoInscripcion === "PENDIENTE" ||
         proyecto.fase === "TERMINADO" ||
         proyecto.fase === "NULO" ||
-        proyecto.estado === "INACTIVO" ||
-        estadoInscripcion === "PENDIENTE" ||
-        estadoInscripcion === "RECHAZADO"
+        proyecto.estado === "INACTIVO"
       ) {
         return null;
       }
