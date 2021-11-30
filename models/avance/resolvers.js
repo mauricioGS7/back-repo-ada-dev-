@@ -4,9 +4,17 @@ import { ModeloAvance } from "./avance.js";
 const resolversAvance = {
   Query: {
     Avances: async (parent, args) => {
-      const avances = await ModeloAvance.find()
-        .populate("proyecto")
-        .populate("creadoPor");
+      const avances = await ModeloAvance.find({}).populate([
+        {
+          path: "proyecto",
+          populate: {
+            path: "lider",
+          },
+        },
+        {
+          path: "creadoPor",
+        },
+      ]);
       return avances;
     },
     Avance: async (parents, args) => {
@@ -15,14 +23,6 @@ const resolversAvance = {
         .populate("creadoPor");
       return avance;
     },
-    AvancePorProyecto: async (parents, args) => {
-      const avanceFiltradoProyecto = await ModeloAvance.find({
-        proyecto: args.idProyecto,
-      })
-        .populate("proyecto")
-        .populate("creadoPor");
-      return avanceFiltradoProyecto;
-    },
     AvancePorUsuario: async (parents, args) => {
       const avanceFiltradoUsuario = await ModeloAvance.find({
         creadoPor: args._id,
@@ -30,6 +30,14 @@ const resolversAvance = {
         .populate("proyecto")
         .populate("creadoPor");
       return avanceFiltradoUsuario;
+    },
+    AvancePorProyecto: async (parents, args) => {
+      const avanceFiltradoProyecto = await ModeloAvance.find({
+        proyecto: args.idProyecto,
+      })
+        .populate("proyecto")
+        .populate("creadoPor");
+      return avanceFiltradoProyecto;
     },
 
     ProyectosInscritos: async (parent, args) => {
