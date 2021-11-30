@@ -4,9 +4,17 @@ import { ModeloAvance } from "./avance.js";
 const resolversAvance = {
   Query: {
     Avances: async (parent, args) => {
-      const avances = await ModeloAvance.find()
-        .populate("proyecto")
-        .populate("creadoPor");
+      const avances = await ModeloAvance.find({}).populate([
+        {
+          path: "proyecto",
+          populate: {
+            path: "lider",
+          },
+        },
+        {
+          path: "creadoPor",
+        },
+      ]);
       return avances;
     },
     Avance: async (parents, args) => {
@@ -22,17 +30,6 @@ const resolversAvance = {
         .populate("proyecto")
         .populate("creadoPor");
       return avanceFiltradoUsuario;
-    },
-    AvancePorLider: async (parents, args) => {
-      const avanceFiltradoLider = await ModeloAvance.find()
-        .populate([
-          {
-            path: "proyecto",
-            match: { lider: "619fb422e5c9be2fe534229b" },
-          },
-        ])
-        .populate("creadoPor");
-      return avanceFiltradoLider;
     },
     AvancePorProyecto: async (parents, args) => {
       const avanceFiltradoProyecto = await ModeloAvance.find({
