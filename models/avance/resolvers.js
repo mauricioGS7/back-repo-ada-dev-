@@ -47,7 +47,9 @@ const resolversAvance = {
             path: "inscripciones",
             populate: {
               path: "estudiante",
-              match: { _id: "61a246dcb1cf40a604a60d75" },
+              /* match: { _id: { $in: [args._id] } }, */
+              $where: { _id: { $eq: args._id } },
+              /* match: { _id: { $ne: null } }, */
             },
           },
         ]);
@@ -129,7 +131,8 @@ const resolversAvance = {
       const proyecto = await ProjectModel.findOne({
         nombre: args.proyecto,
       });
-
+      // si la fase del proyecto es TERMINADO o el estado es INACTIVO no se pueden hacer actualizaciones
+      // sino lo actualiza normalmente
       if (proyecto.fase === "TERMINADO" || proyecto.estado === "INACTIVO") {
         return null;
       } else {
