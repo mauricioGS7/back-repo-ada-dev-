@@ -41,22 +41,17 @@ const resolversAvance = {
     },
 
     ProyectosInscritos: async (parent, args) => {
-      try {
-        const proyectoFiltradoInscripcion = await ProjectModel.find().populate([
-          {
-            path: "inscripciones",
-            populate: {
-              path: "estudiante",
-              /* match: { _id: { $in: [args._id] } }, */
-              $where: { _id: { $eq: args._id } },
-              /* match: { _id: { $ne: null } }, */
-            },
+      const proyectoFiltradoInscripcion = await ProjectModel.find().populate([
+        {
+          path: "inscripciones",
+          populate: {
+            path: "estudiante",
+            // match: { _id: args.idEstudiante },
+            match: { _id: { $in: [args.idEstudiante] } },
           },
-        ]);
-        return proyectoFiltradoInscripcion;
-      } catch (error) {
-        console.log("hay nulos");
-      }
+        },
+      ]);
+      return proyectoFiltradoInscripcion;
     },
   },
   Mutation: {
