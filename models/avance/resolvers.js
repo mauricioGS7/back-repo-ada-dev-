@@ -4,7 +4,7 @@ import { ModeloAvance } from "./avance.js";
 const resolversAvance = {
   Query: {
     Avances: async (parent, args) => {
-      const avances = await ModeloAvance.find({}).populate([
+      const avances = await ModeloAvance.find().populate([
         {
           path: "proyecto",
           populate: {
@@ -39,18 +39,15 @@ const resolversAvance = {
         .populate("creadoPor");
       return avanceFiltradoProyecto;
     },
+    ProyectosRegistrar: async (parents, args) => {
+      return await ProjectModel.find();
+    },
 
     ProyectosInscritos: async (parent, args) => {
-      const proyectoFiltradoInscripcion = await ProjectModel.find().populate([
-        {
-          path: "inscripciones",
-          populate: {
-            path: "estudiante",
-            // match: { _id: args.idEstudiante },
-            match: { _id: { $in: [args.idEstudiante] } },
-          },
-        },
-      ]);
+      const proyectoFiltradoInscripcion = await ProjectModel.find()
+        .populate("inscripciones")
+        .where({ inscripciones: { estado: args.idEstudiante } });
+
       return proyectoFiltradoInscripcion;
     },
   },
