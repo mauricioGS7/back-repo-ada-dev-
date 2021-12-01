@@ -22,6 +22,22 @@ const resolversProyecto = {
       });
       return proyectoCreado;
     },
+
+    editarProyecto: async (parent, args) => {
+      const proyecto = await ProjectModel.findOne({
+        _id: args._id
+      });
+      if (proyecto.fase === "TERMINADO") {
+        return null;
+      } else {
+        const proyectoEditado = await ProjectModel.findByIdAndUpdate(
+          args._id,
+          { ...args.campos },
+          { new: true }
+        );
+        return proyectoEditado;
+      }
+    },
   },
 };
 
