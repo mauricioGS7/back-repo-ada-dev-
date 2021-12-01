@@ -28,8 +28,17 @@ const resolversProyecto = {
       return proyectoCreado;
     },
     editarProyecto: async(parent, args)=>{
-      const proyectoEditado = await ProjectModel.findByIdAndUpdate(args._id,{...args.campos}, {new:true})
-      return proyectoEditado;
+      const buscarProyecto = await ProjectModel.findById(
+        args._id);
+      if(buscarProyecto.fase === "TERMINADO"){
+        return null;
+      }else{
+        const proyectoEditado = await ProjectModel.findByIdAndUpdate(
+          args._id,
+          {...args.campos}, 
+          {new:true});
+        return proyectoEditado;
+      }
     },
     crearObjetivo: async(parent, args)=>{
       const proyectoConObjetivo = await ProjectModel.findByIdAndUpdate(args.idProyecto,{
