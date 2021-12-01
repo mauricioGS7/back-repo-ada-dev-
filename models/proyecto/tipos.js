@@ -11,6 +11,20 @@ const tiposProyecto = gql`
     descripcion: String!
     tipo: Enum_TipoObjetivo!
   }
+  input camposObjetivo {
+    descripcion: String!
+    tipo: Enum_TipoObjetivo!
+  }
+
+  input camposProyecto{
+    nombre: String
+    presupuesto: Float
+    fechaInicio: Date
+    fechaFin: Date
+    estado: Enum_EstadoProyecto
+    fase: Enum_FaseProyecto
+    lider: String
+  }
 
   input camposObjetivo {
     descripcion: String!
@@ -57,7 +71,27 @@ const tiposProyecto = gql`
       objetivos: [crearObjetivo]
     ): Proyecto
 
-    editarProyecto(_id: String!, campos: camposProyecto!): Proyecto
+    crearObjetivo(
+      idProyecto: String!, 
+      campos: camposObjetivo!
+    ):Proyecto
+
+    editarProyecto(
+      _id:String!
+      campos:camposProyecto!
+
+    ):Proyecto
+
+    editarObjetivo(
+      idProyecto: String!
+      indexObjetivo:Int!
+      campos:camposObjetivo
+    ):Proyecto
+
+    eliminarObjetivo(
+      idPoryecto:String!
+      idObjetivo:String!
+    ):Proyecto
   }
 `;
 
