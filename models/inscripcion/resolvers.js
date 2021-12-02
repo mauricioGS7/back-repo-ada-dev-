@@ -2,12 +2,22 @@ import { InscriptionModel } from "./inscripcion.js";
 
 const resolverInscripciones = {
   Query: {
+    
     consultarInscripciones: async (parent, args) => {
       const inscripciones = await InscriptionModel.find()
         .populate("proyecto")
         .populate("estudiante");
       return inscripciones;
     },
+
+    consultarInscripcionesPorProyecto :async (parent, args) => {
+      const inscripcionesPorProyecto = await InscriptionModel.find({
+        proyecto: args.proyecto
+      }).populate("proyecto")
+        .populate("estudiante");
+      return inscripcionesPorProyecto;
+    }
+
   },
   Mutation: {
     crearInscripcion: async (parent, args) => {
