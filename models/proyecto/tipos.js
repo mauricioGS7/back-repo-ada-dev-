@@ -67,6 +67,10 @@ const tiposProyecto = gql`
 
     ):Proyecto
 
+    eliminarProyecto(
+      _id:String!
+    ): Proyecto
+
     editarObjetivo(
       idProyecto: String!
       indexObjetivo:Int!
