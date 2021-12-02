@@ -1,4 +1,5 @@
 import { ProjectModel } from "../proyecto/proyecto.js";
+import { InscriptionModel } from "../inscripcion/inscripcion.js";
 import { ModeloAvance } from "./avance.js";
 
 const resolversAvance = {
@@ -31,6 +32,23 @@ const resolversAvance = {
         .populate("creadoPor");
       return avanceFiltradoUsuario;
     },
+    AvancePorLider: async (parents, args) => {
+      const avanceFiltradoUsuario = await ModeloAvance.find().populate([
+        {
+          path: "proyecto",
+          populate: {
+            path: "lider",
+            match: { _id: args._id },
+            retainNullValues: true,
+            options: { retainNullValues: true },
+          },
+        },
+        {
+          path: "creadoPor",
+        },
+      ]);
+      return avanceFiltradoUsuario;
+    },
     AvancePorProyecto: async (parents, args) => {
       const avanceFiltradoProyecto = await ModeloAvance.find({
         proyecto: args.idProyecto,
@@ -41,14 +59,6 @@ const resolversAvance = {
     },
     ProyectosRegistrar: async (parents, args) => {
       return await ProjectModel.find();
-    },
-
-    ProyectosInscritos: async (parent, args) => {
-      const proyectoFiltradoInscripcion = await ProjectModel.find()
-        .populate("inscripciones")
-        .where({ inscripciones: { estado: args.idEstudiante } });
-
-      return proyectoFiltradoInscripcion;
     },
   },
   Mutation: {
