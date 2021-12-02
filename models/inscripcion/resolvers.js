@@ -47,10 +47,6 @@ const resolverInscripciones = {
       );
       return inscripcionRechazada;
     },
-
-    eliminarInscripcion: async (parent, args) => {
-      
-    }
   },
 };
 
