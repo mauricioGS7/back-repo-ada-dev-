@@ -32,23 +32,6 @@ const resolversAvance = {
         .populate("creadoPor");
       return avanceFiltradoUsuario;
     },
-    AvancePorLider: async (parents, args) => {
-      const avanceFiltradoUsuario = await ModeloAvance.find().populate([
-        {
-          path: "proyecto",
-          populate: {
-            path: "lider",
-            match: { _id: args._id },
-            retainNullValues: true,
-            options: { retainNullValues: true },
-          },
-        },
-        {
-          path: "creadoPor",
-        },
-      ]);
-      return avanceFiltradoUsuario;
-    },
     AvancePorProyecto: async (parents, args) => {
       const avanceFiltradoProyecto = await ModeloAvance.find({
         proyecto: args.idProyecto,
