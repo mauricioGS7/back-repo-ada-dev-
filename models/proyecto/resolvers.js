@@ -32,7 +32,7 @@ const resolversProyecto = {
         args._id);
       if(buscarProyecto.fase === "TERMINADO"){
         return null;
-      }else{
+      }else if(buscarProyecto.estado === "ACTIVO"){
         const proyectoEditado = await ProjectModel.findByIdAndUpdate(
           args._id,
           {...args.campos}, 
@@ -49,6 +49,11 @@ const resolversProyecto = {
 
       return proyectoConObjetivo;
     },
+    eliminarProyecto: async(parent, args) => {
+      const proyectoEliminada = await ProjectModel.findByIdAndDelete(args._id);
+      return proyectoEliminada;
+   },
+  
     editarObjetivo: async(parent, args)=>{
       const proyectoEditado= await ProjectModel.findByIdAndUpdate(args.idProyecto, {
         $set:{
@@ -74,7 +79,6 @@ const resolversProyecto = {
       );
       return proyectoObjetivo;
     }
-
   },
 };
 
