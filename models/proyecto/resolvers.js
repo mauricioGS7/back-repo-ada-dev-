@@ -10,10 +10,18 @@ const resolversProyecto = {
             path: 'creadoPor'
           })
         })
-        .populate('lider');
       return proyectos;
     },
+
+    ProyectosLiderados: async(parent, args)=>{
+      
+      const proyectosLiderados = await ProjectModel.find({'lider':args.idLider})
+      .populate('lider');
+      
+      return proyectosLiderados;
+    }
   },
+
   Mutation: {
     crearProyecto: async (parent, args) => {
       const proyectoCreado = await ProjectModel.create({
@@ -31,6 +39,7 @@ const resolversProyecto = {
       const buscarProyecto = await ProjectModel.findById(
         args._id);
       if(buscarProyecto.fase === "TERMINADO"){
+      
         return null;
       }else if(buscarProyecto.estado === "ACTIVO"){
         const proyectoEditado = await ProjectModel.findByIdAndUpdate(
