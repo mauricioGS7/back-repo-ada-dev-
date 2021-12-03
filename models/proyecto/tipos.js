@@ -76,11 +76,6 @@ const tiposProyecto = gql`
       presupuesto: Float
       indexObjetivo:Int
       campos:camposObjetivo
-
-    editarProyectoLider(
-      _id:String!
-      nombre:String
-      presupuesto:Float
     ):Proyecto
 
     eliminarProyecto(
