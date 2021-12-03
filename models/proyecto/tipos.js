@@ -65,7 +65,12 @@ const tiposProyecto = gql`
     editarProyecto(
       _id:String!
       campos:camposProyecto!
+    ):Proyecto
 
+    editarProyectoLider(
+      _id:String!
+      nombre:String
+      presupuesto:Float
     ):Proyecto
 
     eliminarProyecto(

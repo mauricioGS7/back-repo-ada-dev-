@@ -9,6 +9,11 @@ const resolversProyecto = {
           populate:({
             path: 'creadoPor'
           })
+        }).populate({
+          path:'inscripciones',
+          populate:({
+            path:'estudiante'
+          })
         })
         .populate('lider')
       return proyectos;
@@ -48,9 +53,31 @@ const resolversProyecto = {
         const proyectoEditado = await ProjectModel.findByIdAndUpdate(
           args._id,
           {...args.campos}, 
+          
           {new:true});
-        return proyectoEditado;
+          
+          return proyectoEditado;
       }
+    
+    },
+    editarProyectoLider: async(parent, args)=>{
+      const proyectoLider = await ProjectModel.findById(args._id);
+    
+      if(proyectoLider.fase == "TERMINADO"){
+        return null;
+      }else if(proyectoLider.estado=="ACTIVO"){
+        const edicionLider = await ProjectModel.findByIdAndUpdate(
+          args._id,
+          {
+          nombre:args.nombre,
+          presupuesto:args.presupuesto
+          },
+          {new:true}
+        );
+        return edicionLider;
+      }
+
+
     },
     crearObjetivo: async(parent, args)=>{
       const proyectoConObjetivo = await ProjectModel.findByIdAndUpdate(args.idProyecto,{
