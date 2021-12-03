@@ -33,8 +33,8 @@ const resolversAvance = {
         .populate("creadoPor");
       return avanceFiltradoUsuario;
     },
-    AvancePorProyecto: async (parents, args) => {
-      const avanceFiltradoProyecto = await ModeloAvance.find().populate([
+    AvancePorProyecto: async (parents, args, context) => {
+      const avances = await ModeloAvance.find().populate([
         {
           path: "proyecto",
           populate: {
@@ -45,7 +45,23 @@ const resolversAvance = {
           path: "creadoPor",
         },
       ]);
-      return avanceFiltradoProyecto;
+
+      let idsAvances = [];
+      let c = 0;
+      avances.forEach((avance) => {
+        avance.proyecto.inscripciones.forEach((inscripcion) => {
+          if (
+            inscripcion.estado === "ACEPTADO" &&
+            inscripcion.estudiante + "" === context.userData._id
+          ) {
+            idsAvances = [...idsAvances, avance];
+            c += 1;
+          }
+        });
+      });
+
+      console.log(c);
+      return idsAvances;
     },
     ProyectosRegistrar: async (parents, args) => {
       return await ProjectModel.find();
