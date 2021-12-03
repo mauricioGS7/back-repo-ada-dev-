@@ -1,6 +1,6 @@
-import { UserModel } from '../../models/usuario/usuario.js';
-import bcrypt from 'bcrypt';
-import { generateToken } from '../../utils/tokenUtils.js';
+import { UserModel } from "../../models/usuario/usuario.js";
+import bcrypt from "bcrypt";
+import { generateToken } from "../../utils/tokenUtils.js";
 
 const resolversAutenticacion = {
   Mutation: {
@@ -69,10 +69,10 @@ const resolversAutenticacion = {
     },
 
     refreshToken: async (parent, args, context) => {
-      console.log('contexto', context);
+      console.log("contexto", context);
       if (!context.userData) {
         return {
-          error: 'token no valido',
+          error: "token no valido",
         };
       } else {
         const usuarioEcontrado = await UserModel.findOne({ correo: context.userData.correo });
