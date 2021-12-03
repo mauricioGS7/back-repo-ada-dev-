@@ -10,6 +10,7 @@ const resolversProyecto = {
             path: 'creadoPor'
           })
         })
+        .populate('lider')
       return proyectos;
     },
 
@@ -20,6 +21,8 @@ const resolversProyecto = {
       
       return proyectosLiderados;
     }
+
+
   },
 
   Mutation: {
