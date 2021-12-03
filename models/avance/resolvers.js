@@ -1,6 +1,7 @@
 import { ProjectModel } from "../proyecto/proyecto.js";
 import { InscriptionModel } from "../inscripcion/inscripcion.js";
 import { ModeloAvance } from "./avance.js";
+import { BREAK } from "graphql";
 
 const resolversAvance = {
   Query: {
@@ -33,11 +34,17 @@ const resolversAvance = {
       return avanceFiltradoUsuario;
     },
     AvancePorProyecto: async (parents, args) => {
-      const avanceFiltradoProyecto = await ModeloAvance.find({
-        proyecto: args.idProyecto,
-      })
-        .populate("proyecto")
-        .populate("creadoPor");
+      const avanceFiltradoProyecto = await ModeloAvance.find().populate([
+        {
+          path: "proyecto",
+          populate: {
+            path: "inscripciones",
+          },
+        },
+        {
+          path: "creadoPor",
+        },
+      ]);
       return avanceFiltradoProyecto;
     },
     ProyectosRegistrar: async (parents, args) => {
@@ -51,28 +58,26 @@ const resolversAvance = {
         _id: args.proyecto,
       }).populate("inscripciones");
 
-      //buscamos en el proyecto si exite la inscripcion, si no tiene inscripciones el proyecto, retornamos null
+      // buscamos en el proyecto si exite la inscripcion,
+      // si no tiene inscripciones el proyecto, retornamos null
       let estadoInscripcion;
       if (proyecto.inscripciones.length === 0) {
         // no hay inscripciones
         return null;
       } else {
-        // si existen inscripciones, recorremos buscando el estudiante, si no existe retornamos null
+        // si existen inscripciones, recorremos buscando el estudiante,
+        // si no existe retornamos null
         proyecto.inscripciones.forEach((element) => {
           console.log("element", element);
           if (element.estudiante + "" === context.userData._id) {
             estadoInscripcion = element.estado;
             console.log("estado inscp", estadoInscripcion);
-          } else {
-            console.log("NO INSCRITO");
-            estadoInscripcion = null;
           }
         });
       }
-
-      //si la fase es TERMINADO o NULO, o estado de la inscripcion es PENDIENTE o RECHAZADO no puedo agregar avances
+      // si la fase es TERMINADO o NULO, o estado de la inscripcion
+      // es PENDIENTE o RECHAZADO no puedo agregar avances
       if (
-        estadoInscripcion === null ||
         estadoInscripcion === "RECHAZADO" ||
         estadoInscripcion === "PENDIENTE" ||
         proyecto.fase === "TERMINADO" ||
@@ -101,7 +106,7 @@ const resolversAvance = {
         return avanceCreado;
       }
       // si la fase es DESARROLLO crea el avance normalmente
-      else {
+      else if (estadoInscripcion === "ACEPTADO") {
         const avanceCreado = await ModeloAvance.create({
           fechaAvance: new Date(),
           descripcion: args.descripcion,
@@ -117,30 +122,28 @@ const resolversAvance = {
         nombre: args.proyecto,
       }).populate("inscripciones");
 
-      console.log("lider", proyecto.lider._id + "");
       // verificamos que el usuario sea un estudiante
       if (proyecto.lider._id + "" !== context.userData._id) {
-        //buscamos en el proyecto si exite la inscripcion, si no tiene inscripciones el proyecto, retornamos null
+        // buscamos en el proyecto si exite la inscripcion,
+        // si no tiene inscripciones el proyecto, retornamos null
         let estadoInscripcion;
         if (proyecto.inscripciones.length === 0) {
           // no hay inscripciones
           return null;
-        } else {
-          // si existen inscripciones, recorremos buscando el estudiante, si no existe retornamos null
+        }
+        // si existen inscripciones, recorremos buscando el estudiante,
+        // si no existe retornamos null
+        else {
           proyecto.inscripciones.forEach((element) => {
             if (element.estudiante + "" === context.userData._id) {
               estadoInscripcion = element.estado;
               console.log("estado inscp", estadoInscripcion);
-            } else {
-              console.log("NO INSCRITO");
-              estadoInscripcion = null;
             }
           });
         }
-        // si la fase del proyecto es TERMINADO o el estado es INACTIVO no se pueden hacer actualizaciones
-        // sino lo actualiza normalmente
+        // si la fase del proyecto es TERMINADO o el estado es INACTIVO
+        // no se pueden hacer actualizaciones, sino lo actualiza normalmente
         if (
-          estadoInscripcion === null ||
           estadoInscripcion === "RECHAZADO" ||
           estadoInscripcion === "PENDIENTE" ||
           proyecto.fase === "TERMINADO" ||

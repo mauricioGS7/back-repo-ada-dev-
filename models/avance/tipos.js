@@ -13,7 +13,7 @@ const tiposAvance = gql`
   type Query {
     Avances: [Avance]
     Avance(_id: String!): Avance
-    AvancePorProyecto(idProyecto: String!): [Avance]
+    AvancePorProyecto: [Avance]
     AvancePorUsuario(_id: String!): [Avance]
     ProyectosRegistrar: [Proyecto]
   }
