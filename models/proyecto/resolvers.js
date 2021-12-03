@@ -1,4 +1,5 @@
 import { ProjectModel } from "./proyecto.js";
+import { UserModel } from "../usuario/usuario.js";
 
 const resolversProyecto = {
   Query: {
@@ -11,7 +12,6 @@ const resolversProyecto = {
           })
         })
         .populate('lider');
-      return proyectos;
     },
   },
   Mutation: {
