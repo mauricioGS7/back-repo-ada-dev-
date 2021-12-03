@@ -13,8 +13,9 @@ const tiposAvance = gql`
   type Query {
     Avances: [Avance]
     Avance(_id: String!): Avance
-    AvancePorProyecto: [Avance]
-    AvancePorUsuario(_id: String!): [Avance]
+    AvancesPorLider: [Avance]
+    AvancesPorUsuario(_id: String!): [Avance]
+    AvancesPorProyecto: [Avance]
     ProyectosRegistrar: [Proyecto]
   }
   type Mutation {
