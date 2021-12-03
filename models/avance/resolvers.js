@@ -25,7 +25,31 @@ const resolversAvance = {
         .populate("creadoPor");
       return avance;
     },
-    AvancePorUsuario: async (parents, args) => {
+    AvancesPorLider: async (parent, args, context) => {
+      const avancesPorLider = await ModeloAvance.find().populate([
+        {
+          path: "proyecto",
+          populate: {
+            path: "lider",
+          },
+        },
+        {
+          path: "creadoPor",
+        },
+      ]);
+
+      let avancesFiltrados = [];
+      let c = 0;
+      avancesPorLider.forEach((avance) => {
+        if (avance.proyecto.lider._id + "" === context.userData._id) {
+          avancesFiltrados = [...avancesFiltrados, avance];
+          c += 1;
+        }
+      });
+      console.log("avances por lider", c);
+      return avancesFiltrados;
+    },
+    AvancesPorUsuario: async (parents, args) => {
       const avanceFiltradoUsuario = await ModeloAvance.find({
         creadoPor: args._id,
       })
@@ -33,8 +57,8 @@ const resolversAvance = {
         .populate("creadoPor");
       return avanceFiltradoUsuario;
     },
-    AvancePorProyecto: async (parents, args, context) => {
-      const avances = await ModeloAvance.find().populate([
+    AvancesPorProyecto: async (parents, args, context) => {
+      const avancesPorProyecto = await ModeloAvance.find().populate([
         {
           path: "proyecto",
           populate: {
@@ -46,22 +70,22 @@ const resolversAvance = {
         },
       ]);
 
-      let idsAvances = [];
+      let avancesFiltrados = [];
       let c = 0;
-      avances.forEach((avance) => {
+      avancesPorProyecto.forEach((avance) => {
         avance.proyecto.inscripciones.forEach((inscripcion) => {
           if (
             inscripcion.estado === "ACEPTADO" &&
             inscripcion.estudiante + "" === context.userData._id
           ) {
-            idsAvances = [...idsAvances, avance];
+            avancesFiltrados = [...avancesFiltrados, avance];
             c += 1;
           }
         });
       });
 
-      console.log(c);
-      return idsAvances;
+      console.log("avances estu en proyectos", c);
+      return avancesFiltrados;
     },
     ProyectosRegistrar: async (parents, args) => {
       return await ProjectModel.find();
@@ -139,10 +163,10 @@ const resolversAvance = {
       }).populate("inscripciones");
 
       // verificamos que el usuario sea un estudiante
+      let estadoInscripcion;
       if (proyecto.lider._id + "" !== context.userData._id) {
         // buscamos en el proyecto si exite la inscripcion,
         // si no tiene inscripciones el proyecto, retornamos null
-        let estadoInscripcion;
         if (proyecto.inscripciones.length === 0) {
           // no hay inscripciones
           return null;
@@ -178,6 +202,14 @@ const resolversAvance = {
           );
           return avanceEditado;
         }
+      } else if (
+        estadoInscripcion === "RECHAZADO" ||
+        estadoInscripcion === "PENDIENTE" ||
+        proyecto.fase === "TERMINADO" ||
+        proyecto.fase === "NULO" ||
+        proyecto.estado === "INACTIVO"
+      ) {
+        return null;
       } else {
         const avanceEditado = await ModeloAvance.findByIdAndUpdate(
           args._id,
