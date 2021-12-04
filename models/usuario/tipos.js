@@ -10,8 +10,8 @@ const tiposUsuario = gql`
     rol: Enum_Rol!
     estado: Enum_EstadoUsuario
     inscripciones: [Inscripcion]
-    avancesCreados: [Avance]
-    proyectosLiderados: [Proyecto]
+    avances: [Avance]
+    proyectos: [Proyecto]
   }
   type Password{
     mensaje: Boolean!

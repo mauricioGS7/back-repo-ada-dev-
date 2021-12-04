@@ -64,6 +64,8 @@ const userSchema = new Schema({
   }
 );
 
+
+
 userSchema.virtual('proyectos',{
   ref:'Proyecto',
   localField: '_id',
@@ -75,6 +77,7 @@ userSchema.virtual('inscripciones',{
   localField: '_id',
   foreignField: 'estudiante',
 });
+
 
 userSchema.virtual('avances',{
   ref:'Avance',
