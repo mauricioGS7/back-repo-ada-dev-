@@ -32,6 +32,26 @@ const tiposAvance = gql`
       descripcion: String!
       observaciones: String
     ): Avance
+    crearAvanceGenerico(
+      idEstudiante: String!
+      fechaAvance: Date
+      descripcion: String!
+      proyecto: String!
+      creadoPor: String
+      observaciones: String
+    ): Avance
+    editarAvanceEstudiante(
+      _id: String!
+      proyecto: String
+      descripcion: String!
+      idEstudiante: String!
+    ): Avance
+    editarAvanceLider(
+      _id: String!
+      proyecto: String
+      observaciones: String!
+      idLider: String!
+    ): Avance
   }
 `;
 
