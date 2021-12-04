@@ -10,6 +10,13 @@ const resolversUsuario = {
         .populate('avances');
       return usuarios;
     },
+    UsuariosEstudiantes: async (parent, args) => {
+      const usuariosEstudiantes = await UserModel.find({rol : 'ESTUDIANTE'})
+        .populate('proyectos')
+        .populate('inscripciones')
+        .populate('avances');
+      return usuariosEstudiantes;
+    },
     Usuario: async (parent, args) => {
       const usuario = await UserModel.findOne({ _id: args._id })
         .populate("proyectos")
