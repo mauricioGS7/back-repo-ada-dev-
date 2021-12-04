@@ -12,7 +12,7 @@ const resolversProyecto = {
         })
         .populate('lider');
       return proyectos;
-    },
+    },  
   },
   Mutation: {
     crearProyecto: async (parent, args) => {
