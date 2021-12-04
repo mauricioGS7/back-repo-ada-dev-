@@ -4,7 +4,7 @@ const resolverInscripciones = {
   Query: {
     
     consultarInscripciones: async (parent, args) => {
-      const inscripciones = await InscriptionModel.find()
+      const inscripciones = await InscriptionModel.find({estado : 'PENDIENTE'})
         .populate("proyecto")
         .populate("estudiante");
       return inscripciones;
@@ -12,7 +12,7 @@ const resolverInscripciones = {
 
     consultarInscripcionesPorProyecto :async (parent, args) => {
       const inscripcionesPorProyecto = await InscriptionModel.find({
-        proyecto: args.proyecto
+        proyecto: args.projectId, estado : 'PENDIENTE'
       }).populate("proyecto")
         .populate("estudiante");
       return inscripcionesPorProyecto;
