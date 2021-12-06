@@ -95,8 +95,29 @@ const resolversAvance = {
         return [];
       }
     },
-    ProyectosRegistrar: async (parents, args) => {
-      return await ProjectModel.find();
+    ProyectosRegistrar: async (parents, args, context) => {
+      const proyectos = await ProjectModel.find().populate({
+        path: "inscripciones",
+        populate: {
+          path: "estudiante",
+        },
+      });
+      let proyectosInscritos = [];
+      let c = 0;
+      proyectos.forEach((proyecto) => {
+        proyecto.inscripciones.forEach((inscripcion) => {
+          if (
+            inscripcion.estado === "ACEPTADO" &&
+            inscripcion.estudiante._id + "" === context.userData._id
+          ) {
+            proyectosInscritos = [...proyectosInscritos, proyecto];
+            c += 1;
+          }
+        });
+      });
+      // console.log("proyectosinscr", proyectosInscritos);
+      // console.log(c);
+      return proyectosInscritos;
     },
   },
   Mutation: {
