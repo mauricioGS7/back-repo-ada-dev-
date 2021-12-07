@@ -16,8 +16,17 @@ const tiposUsuario = gql`
   type Password{
     mensaje: Boolean!
   }
+
+  input FiltroUsuarios{
+    _id: ID
+    identificacion: String
+    correo: String
+    rol: Enum_Rol
+    estado: Enum_EstadoUsuario
+  }
+
   type Query {
-    Usuarios: [Usuario]
+    Usuarios(filtro:FiltroUsuarios): [Usuario]
     UsuariosEstudiantes: [Usuario]
     Usuario(_id: String!): Usuario
   }
