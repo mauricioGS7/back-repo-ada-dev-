@@ -251,36 +251,36 @@ const resolversAvance = {
         return avanceEditado;
       }
     },
-    crearAvanceGenerico: async (parent, args) => {
-      const avanceCreado = await ModeloAvance.create({
-        fechaAvance: new Date(),
-        descripcion: args.descripcion,
-        proyecto: args.proyecto,
-        creadoPor: args.idEstudiante,
-        observaciones: args.observaciones,
-      });
-      return avanceCreado;
-    },
-    editarAvanceEstudiante: async (parent, args) => {
-      const avanceEditado = await ModeloAvance.findByIdAndUpdate(
-        args._id,
-        {
-          descripcion: args.descripcion,
-        },
-        { new: true }
-      );
-      return avanceEditado;
-    },
-    editarAvanceLider: async (parent, args) => {
-      const avanceEditado = await ModeloAvance.findByIdAndUpdate(
-        args._id,
-        {
-          observaciones: args.observaciones,
-        },
-        { new: true }
-      );
-      return avanceEditado;
-    },
+    // crearAvanceGenerico: async (parent, args) => {
+    //   const avanceCreado = await ModeloAvance.create({
+    //     fechaAvance: new Date(),
+    //     descripcion: args.descripcion,
+    //     proyecto: args.proyecto,
+    //     creadoPor: args.idEstudiante,
+    //     observaciones: args.observaciones,
+    //   });
+    //   return avanceCreado;
+    // },
+    // editarAvanceEstudiante: async (parent, args) => {
+    //   const avanceEditado = await ModeloAvance.findByIdAndUpdate(
+    //     args._id,
+    //     {
+    //       descripcion: args.descripcion,
+    //     },
+    //     { new: true }
+    //   );
+    //   return avanceEditado;
+    // },
+    // editarAvanceLider: async (parent, args) => {
+    //   const avanceEditado = await ModeloAvance.findByIdAndUpdate(
+    //     args._id,
+    //     {
+    //       observaciones: args.observaciones,
+    //     },
+    //     { new: true }
+    //   );
+    //   return avanceEditado;
+    // },
   },
 };
 
