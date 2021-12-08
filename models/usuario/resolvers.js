@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 const resolversUsuario = {
   Query: {
     Usuarios: async (parent, args) => {
-      const usuarios = await UserModel.find()
+      const usuarios = await UserModel.find({...args.filtro})
         .populate('proyectos')
         .populate('inscripciones')
         .populate('avances');

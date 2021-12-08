@@ -23,6 +23,17 @@ const resolversProyecto = {
     ProyectosLiderados: async(parent, args)=>{    //Historia de usuario: HU_013 y HU_017
       
       const proyectosLiderados = await ProjectModel.find({'lider':args.idLider})
+      .populate({
+        path: 'avances',
+        populate:({
+          path: 'creadoPor'
+        })
+      }).populate({
+        path:'inscripciones',
+        populate:({
+          path:'estudiante'
+        })
+      })
       .populate('lider');
       return proyectosLiderados;
     }
