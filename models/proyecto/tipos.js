@@ -26,6 +26,10 @@ const tiposProyecto = gql`
     lider: String
   }
 
+  input FiltroInscripciones{
+    _id: ID
+  }
+
   type Proyecto {
     _id: ID!
     nombre: String!
@@ -63,6 +67,7 @@ const tiposProyecto = gql`
     ):Proyecto
 
     editarProyectoAdmin(
+      filtro:FiltroInscripciones
       _id:String!
       estado: Enum_EstadoProyecto
       fase: Enum_FaseProyecto
