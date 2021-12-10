@@ -12,8 +12,8 @@ const tiposProyecto = gql`
     tipo: Enum_TipoObjetivo!
   }
   input camposObjetivo {
-    descripcion: String!
-    tipo: Enum_TipoObjetivo!
+    descripcion: String
+    tipo: Enum_TipoObjetivo
   }
 
   input camposProyecto{
@@ -51,10 +51,10 @@ const tiposProyecto = gql`
       presupuesto: Float!
       fechaInicio: Date!
       fechaFin: Date
-      estado: Enum_EstadoProyecto!
-      fase: Enum_FaseProyecto!
+      estado: Enum_EstadoProyecto
+      fase: Enum_FaseProyecto
       lider: String!
-      objetivos: [crearObjetivo]
+      objetivos: [crearObjetivo]!
     ): Proyecto
 
     crearObjetivo(

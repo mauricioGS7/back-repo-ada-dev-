@@ -3,7 +3,10 @@ import { UserModel } from "../usuario/usuario.js";
 
 const resolversProyecto = {
   Query: {
-    Proyectos: async (parent, args) => {    //Historia de usuario: HU_006 y HU_019
+    //Historia de usuario: HU_006 y HU_019
+
+    //Query para pedir los proyectos registrados
+    Proyectos: async (parent, args) => {    
       const proyectos = await ProjectModel.find()
         .populate({
           path: 'avances',
@@ -11,20 +14,35 @@ const resolversProyecto = {
             path: 'creadoPor'
           })
         })
+        .populate({
+          path: 'inscripciones',
+          populate:({
+            path: 'estudiante'
+          })
+        })
         .populate('lider')
-      return proyectos;
+      return proyectos; 
     },
+ //Historia de usuario: HU_013 y HU_017
 
-    ProyectosLiderados: async(parent, args)=>{    //Historia de usuario: HU_013 y HU_017
+    ProyectosLiderados: async(parent, args)=>{   
       
       const proyectosLiderados = await ProjectModel.find({'lider':args.idLider})
+      .populate({
+        path: 'avances',
+        populate:({
+          path: 'creadoPor'
+        })
+      })
       .populate('lider');
       return proyectosLiderados;
     }
   },
 
   Mutation: {
-    crearProyecto: async (parent, args) => {   //Historia de usuario: HU_012  
+    //Historia de usuario: HU_012  
+
+    crearProyecto: async (parent, args) => {   
       const proyectoCreado = await ProjectModel.create({
       nombre: args.nombre,
       estado: args.estado,
@@ -36,12 +54,16 @@ const resolversProyecto = {
       });
       return proyectoCreado;
     },
-    editarProyectoAdmin: async(parent, args)=>{   //Historia de usuario: HU_007, HU_008 y HU_009
+
+     //Historia de usuario: HU_007, HU_008 y HU_009 
+
+    editarProyectoAdmin: async(parent, args)=>{  
       const buscarProyecto = await ProjectModel.findById(
         args._id);
       if(buscarProyecto.fase === "TERMINADO"){
         return null;
-      }else if(buscarProyecto.estado === "INACTIVO" && buscarProyecto.fase === "NULO" ){
+      }
+      else if(buscarProyecto.estado === "INACTIVO" && buscarProyecto.fase === "NULO" ){
         const proyectoEditado = await ProjectModel.findByIdAndUpdate(
           args._id,
           {
@@ -72,7 +94,9 @@ const resolversProyecto = {
         return proyectoEditado;
       }
     },
-    editarProyectoLider: async(parent, args)=>{   //Historia de usuario: HU_014
+     //Historia de usuario: HU_014
+     
+    editarProyectoLider: async(parent, args)=>{  
       const buscarProyecto = await ProjectModel.findById(
         args._id);
       if(buscarProyecto.fase === "TERMINADO"){
