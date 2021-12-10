@@ -13,13 +13,14 @@ const tiposInscripcion = gql`
 
   type Query {
     consultarInscripciones: [Inscripcion]
-    consultarInscripcionesPorProyecto(id: String!): [Inscripcion]
+    consultarInscripcionesPorProyecto(projectId: String!): [Inscripcion]
   }
 
   type Mutation {
     crearInscripcion(proyecto: String!, estudiante: String!): Inscripcion
     aprobarInscripcion(id: String!): Inscripcion
     rechazarInscripcion(id: String!): Inscripcion
+    eliminarInscripcionesProyecto(projectId: String!): String
   }
 `;
 

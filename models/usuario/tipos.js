@@ -10,14 +10,24 @@ const tiposUsuario = gql`
     rol: Enum_Rol!
     estado: Enum_EstadoUsuario
     inscripciones: [Inscripcion]
-    avancesCreados: [Avance]
-    proyectosLiderados: [Proyecto]
+    avances: [Avance]
+    proyectos: [Proyecto]
   }
   type Password{
     mensaje: Boolean!
   }
+
+  input FiltroUsuarios{
+    _id: ID
+    identificacion: String
+    correo: String
+    rol: Enum_Rol
+    estado: Enum_EstadoUsuario
+  }
+
   type Query {
-    Usuarios: [Usuario]
+    Usuarios(filtro:FiltroUsuarios): [Usuario]
+    UsuariosEstudiantes: [Usuario]
     Usuario(_id: String!): Usuario
   }
   type Mutation {

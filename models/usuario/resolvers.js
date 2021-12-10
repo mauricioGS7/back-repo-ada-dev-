@@ -4,11 +4,18 @@ import bcrypt from "bcrypt";
 const resolversUsuario = {
   Query: {
     Usuarios: async (parent, args) => {
-      const usuarios = await UserModel.find()
-        .populate("proyectos")
-        .populate("inscripciones")
-        .populate("avances");
+      const usuarios = await UserModel.find({...args.filtro})
+        .populate('proyectos')
+        .populate('inscripciones')
+        .populate('avances');
       return usuarios;
+    },
+    UsuariosEstudiantes: async (parent, args) => {
+      const usuariosEstudiantes = await UserModel.find({rol : 'ESTUDIANTE'})
+        .populate('proyectos')
+        .populate('inscripciones')
+        .populate('avances');
+      return usuariosEstudiantes;
     },
     Usuario: async (parent, args) => {
       const usuario = await UserModel.findOne({ _id: args._id })
