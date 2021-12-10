@@ -37,6 +37,17 @@ const resolverInscripciones = {
       );
       return inscripcionAprobada;
     },
+
+    eliminarInscripcionesProyecto: async (parent, args) => {
+        
+      const inscripcionesEliminadasPorProyecto = await InscriptionModel.deleteMany(
+        {
+          proyecto: args.projectId
+        }
+      );
+      return inscripcionesEliminadasPorProyecto.deletedCount;
+    },
+
     rechazarInscripcion: async (parent, args) => {
       const inscripcionRechazada = await InscriptionModel.findByIdAndUpdate(
         args.id,
