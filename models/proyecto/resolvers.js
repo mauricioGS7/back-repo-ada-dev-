@@ -47,6 +47,29 @@ const resolversProyecto = {
         })
         .populate('lider');
       return proyectosLiderados;
+    },
+
+    LeerProyecto: async (parent, args) => {
+      const leerProyecto = await ProjectModel.findOne({ _id: args._id })
+      .populate({
+        path: 'avances',
+        populate: ({
+          path: 'creadoPor'
+        })
+      }).populate({
+        path: 'inscripciones',
+        populate: ({
+          path: 'estudiante'
+        })
+      })  
+      .populate({
+        path: 'inscripciones',
+        populate:({
+          path: 'estudiante'
+        })
+      })
+      .populate('lider')
+      return leerProyecto;
     }
   },
 
@@ -74,14 +97,14 @@ const resolversProyecto = {
         const proyectoEditado = await ProjectModel.findByIdAndUpdate(
           args._id,
           {
-            estado: "ACTIVO",
+            estado: args.estado,
             fase: "INICIADO",
             fechaInicio: new Date(),
           },
           { new: true });
         return proyectoEditado;
       }
-      else if (buscarProyecto.fase === "DESARROLLO") {
+      else if (buscarProyecto.fase === "DESARROLLO" && buscarProyecto.estado === "ACTIVO") {
         const proyectoEditado = await ProjectModel.findByIdAndUpdate(
           args._id,
           {
@@ -118,10 +141,6 @@ const resolversProyecto = {
           {
             nombre: args.nombre,
             presupuesto: args.presupuesto,
-            $set: {
-              [`objetivos.${args.indexObjetivo}.descripcion`]: args.campos.descripcion,
-              [`objetivos.${args.indexObjetivo}.tipo`]: args.campos.tipo
-            }
           },
           { new: true });
 
@@ -129,25 +148,7 @@ const resolversProyecto = {
       }
 
     },
-    editarProyectoLider: async (parent, args) => {
-      const proyectoLider = await ProjectModel.findById(args._id);
 
-      if (proyectoLider.fase == "TERMINADO") {
-        return null;
-      } else if (proyectoLider.estado == "ACTIVO") {
-        const edicionLider = await ProjectModel.findByIdAndUpdate(
-          args._id,
-          {
-            nombre: args.nombre,
-            presupuesto: args.presupuesto
-          },
-          { new: true }
-        );
-        return edicionLider;
-      }
-
-
-    },
     crearObjetivo: async (parent, args) => {
       const proyectoConObjetivo = await ProjectModel.findByIdAndUpdate(args.idProyecto, {
         $addToSet: {
