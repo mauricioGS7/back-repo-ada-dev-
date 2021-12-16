@@ -2,15 +2,14 @@ import { InscriptionModel } from "./inscripcion.js";
 
 const resolverInscripciones = {
   Query: {
-    
     consultarInscripciones: async (parent, args) => {
-      const inscripciones = await InscriptionModel.find({estado : 'PENDIENTE'})
+      const inscripciones = await InscriptionModel.find({ estado: "PENDIENTE" })
         .populate("proyecto")
         .populate("estudiante");
       return inscripciones;
     },
 
-    consultarInscripcionesPorProyecto :async (parent, args) => {
+    consultarInscripcionesPorProyecto: async (parent, args) => {
       const inscripcionesPorProyecto = await InscriptionModel.find({
         proyecto: args.projectId, estado : 'PENDIENTE'
       }).populate("proyecto")
@@ -24,8 +23,8 @@ const resolverInscripciones = {
       }).populate("proyecto")
         .populate("estudiante");
       return inscripcionesPorEstudiante;
-    }
-
+    }        
+    
   },
   Mutation: {
     crearInscripcion: async (parent, args) => {
@@ -47,12 +46,10 @@ const resolverInscripciones = {
     },
 
     eliminarInscripcionesProyecto: async (parent, args) => {
-        
-      const inscripcionesEliminadasPorProyecto = await InscriptionModel.deleteMany(
-        {
-          proyecto: args.projectId
-        }
-      );
+      const inscripcionesEliminadasPorProyecto =
+        await InscriptionModel.deleteMany({
+          proyecto: args.projectId,
+        });
       return inscripcionesEliminadasPorProyecto.deletedCount;
     },
 
