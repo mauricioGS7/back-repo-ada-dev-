@@ -40,6 +40,9 @@ const resolverInscripciones = {
         {
           estado: "ACEPTADO",
           fechaIngreso: Date.now(),
+        },
+        {
+          new: true,
         }
       );
       return inscripcionAprobada;
@@ -49,7 +52,11 @@ const resolverInscripciones = {
       const inscripcionesEliminadasPorProyecto =
         await InscriptionModel.deleteMany({
           proyecto: args.projectId,
-        });
+        }, 
+        {
+          new: true,
+        }
+      );
       return inscripcionesEliminadasPorProyecto.deletedCount;
     },
 
@@ -59,6 +66,9 @@ const resolverInscripciones = {
         {
           estado: "RECHAZADO",
           fechaEgreso: Date.now(),
+        },
+        {
+          new: true,
         }
       );
       return inscripcionRechazada;
