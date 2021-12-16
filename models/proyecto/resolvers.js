@@ -1,82 +1,88 @@
 import { ProjectModel } from "./proyecto.js";
 import { UserModel } from "../usuario/usuario.js";
-import {InscriptionModel} from "../inscripcion/inscripcion.js"
+import { InscriptionModel } from "../inscripcion/inscripcion.js";
 
 const resolversProyecto = {
   Query: {
     //Historia de usuario: HU_006 y HU_019
 
     //Query para pedir los proyectos registrados
-    Proyectos: async (parent, args) => {    
+    Proyectos: async (parent, args) => {
       const proyectos = await ProjectModel.find()
         .populate({
-          path: 'avances',
-          populate: ({
-            path: 'creadoPor'
-          })
-        }).populate({
-          path: 'inscripciones',
-          populate: ({
-            path: 'estudiante'
-          })
+          path: "avances",
+          populate: {
+            path: "creadoPor",
+          },
         })
         .populate({
-          path: 'inscripciones',
-          populate:({
-            path: 'estudiante'
-          })
+          path: "inscripciones",
+          populate: {
+            path: "estudiante",
+          },
         })
-        .populate('lider')
-      return proyectos; 
+        .populate({
+          path: "inscripciones",
+          populate: {
+            path: "estudiante",
+          },
+        })
+        .populate("lider");
+      return proyectos;
     },
- //Historia de usuario: HU_013 y HU_017
+    //Historia de usuario: HU_013 y HU_017
 
-    ProyectosLiderados: async (parent, args) => {    //Historia de usuario: HU_013 y HU_017
+    ProyectosLiderados: async (parent, args) => {
+      //Historia de usuario: HU_013 y HU_017
 
-      const proyectosLiderados = await ProjectModel.find({ 'lider': args.idLider })
+      const proyectosLiderados = await ProjectModel.find({
+        lider: args.idLider,
+      })
         .populate({
-          path: 'avances',
-          populate: ({
-            path: 'creadoPor'
-          })
-        }).populate({
-          path: 'inscripciones',
-          populate: ({
-            path: 'estudiante'
-          })
+          path: "avances",
+          populate: {
+            path: "creadoPor",
+          },
         })
-        .populate('lider');
+        .populate({
+          path: "inscripciones",
+          populate: {
+            path: "estudiante",
+          },
+        })
+        .populate("lider");
       return proyectosLiderados;
     },
 
     LeerProyecto: async (parent, args) => {
       const leerProyecto = await ProjectModel.findOne({ _id: args._id })
-      .populate({
-        path: 'avances',
-        populate: ({
-          path: 'creadoPor'
+        .populate({
+          path: "avances",
+          populate: {
+            path: "creadoPor",
+          },
         })
-      }).populate({
-        path: 'inscripciones',
-        populate: ({
-          path: 'estudiante'
+        .populate({
+          path: "inscripciones",
+          populate: {
+            path: "estudiante",
+          },
         })
-      })  
-      .populate({
-        path: 'inscripciones',
-        populate:({
-          path: 'estudiante'
+        .populate({
+          path: "inscripciones",
+          populate: {
+            path: "estudiante",
+          },
         })
-      })
-      .populate('lider')
+        .populate("lider");
       return leerProyecto;
-    }
+    },
   },
 
   Mutation: {
-    //Historia de usuario: HU_012  
+    //Historia de usuario: HU_012
 
-    crearProyecto: async (parent, args) => {   
+    crearProyecto: async (parent, args) => {
       const proyectoCreado = await ProjectModel.create({
         nombre: args.nombre,
         estado: args.estado,
@@ -88,12 +94,15 @@ const resolversProyecto = {
       });
       return proyectoCreado;
     },
-    editarProyectoAdmin: async (parent, args) => {   //Historia de usuario: HU_007, HU_008 y HU_009
-      const buscarProyecto = await ProjectModel.findById(
-        args._id);
+    editarProyectoAdmin: async (parent, args) => {
+      //Historia de usuario: HU_007, HU_008 y HU_009
+      const buscarProyecto = await ProjectModel.findById(args._id);
       if (buscarProyecto.fase === "TERMINADO") {
         return null;
-      } else if (buscarProyecto.estado === "INACTIVO" && buscarProyecto.fase === "NULO") {
+      } else if (
+        buscarProyecto.estado === "INACTIVO" &&
+        buscarProyecto.fase === "NULO"
+      ) {
         const proyectoEditado = await ProjectModel.findByIdAndUpdate(
           args._id,
           {
@@ -101,39 +110,50 @@ const resolversProyecto = {
             fase: "INICIADO",
             fechaInicio: new Date(),
           },
-          { new: true });
+          { new: true }
+        );
         return proyectoEditado;
-      }
-      else if (buscarProyecto.fase === "DESARROLLO" && buscarProyecto.estado === "ACTIVO") {
+      } else if (
+        buscarProyecto.fase === "DESARROLLO" &&
+        buscarProyecto.estado === "ACTIVO"
+      ) {
         const proyectoEditado = await ProjectModel.findByIdAndUpdate(
           args._id,
           {
             fase: args.fase,
             fechaFin: new Date(),
-            estado: "INACTIVO"
+            estado: "INACTIVO",
           },
-          { new: true });
-        const inscripcionesTerminadas = await InscriptionModel.updateMany({ proyecto: args._id },
+          { new: true }
+        );
+        const inscripcionesTerminadas = await InscriptionModel.updateMany(
+          { proyecto: args._id },
           {
-            estado: "RECHAZADO"
-          },{ new: true });
-          console.log(inscripcionesTerminadas)
+            estado: "RECHAZADO",
+            fechaEgreso: new Date(),
+          },
+          { new: true }
+        );
+        console.log(inscripcionesTerminadas);
         return proyectoEditado;
-      }
-      else {
+      } else {
         const proyectoEditado = await ProjectModel.findByIdAndUpdate(
           args._id,
           {
             estado: args.estado,
           },
-          { new: true });
+          { new: true }
+        );
         return proyectoEditado;
       }
     },
-    editarProyectoLider: async (parent, args) => {   //Historia de usuario: HU_014
-      const buscarProyecto = await ProjectModel.findById(
-        args._id);
-      if (buscarProyecto.fase === "TERMINADO" || buscarProyecto.estado==="INACTIVO") {
+    editarProyectoLider: async (parent, args) => {
+      //Historia de usuario: HU_014
+      const buscarProyecto = await ProjectModel.findById(args._id);
+      if (
+        buscarProyecto.fase === "TERMINADO" ||
+        buscarProyecto.estado === "INACTIVO"
+      ) {
         return null;
       } else if (buscarProyecto.estado === "ACTIVO") {
         const proyectoEditado = await ProjectModel.findByIdAndUpdate(
@@ -142,19 +162,23 @@ const resolversProyecto = {
             nombre: args.nombre,
             presupuesto: args.presupuesto,
           },
-          { new: true });
+          { new: true }
+        );
 
         return proyectoEditado;
       }
-
     },
 
     crearObjetivo: async (parent, args) => {
-      const proyectoConObjetivo = await ProjectModel.findByIdAndUpdate(args.idProyecto, {
-        $addToSet: {
-          objetivos: { ...args.campos },
+      const proyectoConObjetivo = await ProjectModel.findByIdAndUpdate(
+        args.idProyecto,
+        {
+          $addToSet: {
+            objetivos: { ...args.campos },
+          },
         },
-      }, { new: true });
+        { new: true }
+      );
 
       return proyectoConObjetivo;
     },
@@ -164,15 +188,19 @@ const resolversProyecto = {
     },
 
     editarObjetivo: async (parent, args) => {
-      const proyectoEditado = await ProjectModel.findByIdAndUpdate(args.idProyecto, {
-        $set: {
-          [`objetivos.${args.indexObjetivo}.descripcion`]: args.campos.descripcion,
-          [`objetivos.${args.indexObjetivo}.tipo`]: args.campos.tipo
-        }
-      }, { new: true });
+      const proyectoEditado = await ProjectModel.findByIdAndUpdate(
+        args.idProyecto,
+        {
+          $set: {
+            [`objetivos.${args.indexObjetivo}.descripcion`]:
+              args.campos.descripcion,
+            [`objetivos.${args.indexObjetivo}.tipo`]: args.campos.tipo,
+          },
+        },
+        { new: true }
+      );
 
       return proyectoEditado;
-
     },
     eliminarObjetivo: async (parent, args) => {
       const proyectoObjetivo = await ProjectModel.findByIdAndUpdate(
@@ -187,7 +215,7 @@ const resolversProyecto = {
         { new: true }
       );
       return proyectoObjetivo;
-    }
+    },
   },
 };
 
