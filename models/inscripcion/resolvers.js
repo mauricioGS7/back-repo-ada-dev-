@@ -9,6 +9,14 @@ const resolverInscripciones = {
       return inscripciones;
     },
 
+    consultarInscripcionPorId :async (parent, args) => {
+      const inscripcionPorId = await InscriptionModel.find({
+        _id: args._id
+      }).populate("proyecto")
+        .populate("estudiante");
+      return inscripcionPorId;
+    },
+
     consultarInscripcionesPorProyecto: async (parent, args) => {
       const inscripcionesPorProyecto = await InscriptionModel.find({
         proyecto: args.projectId, estado : 'PENDIENTE'
