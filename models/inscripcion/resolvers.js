@@ -11,13 +11,20 @@ const resolverInscripciones = {
 
     consultarInscripcionesPorProyecto: async (parent, args) => {
       const inscripcionesPorProyecto = await InscriptionModel.find({
-        proyecto: args.projectId,
-        estado: "PENDIENTE",
-      })
-        .populate("proyecto")
-        .populate("estudiante");
+        proyecto: args.projectId, estado : 'PENDIENTE'
+      }).populate("proyecto")
+        .populate("estudiante")        
       return inscripcionesPorProyecto;
     },
+
+    consultarInscripcionesPorEstudiante :async (parent, args) => {
+      const inscripcionesPorEstudiante = await InscriptionModel.find({
+        estudiante: args.estudianteId
+      }).populate("proyecto")
+        .populate("estudiante");
+      return inscripcionesPorEstudiante;
+    }        
+    
   },
   Mutation: {
     crearInscripcion: async (parent, args) => {
