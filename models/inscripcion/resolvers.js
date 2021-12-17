@@ -3,28 +3,31 @@ import { InscriptionModel } from "./inscripcion.js";
 const resolverInscripciones = {
   Query: {
     consultarInscripciones: async (parent, args) => {
-      const inscripciones = await InscriptionModel.find({ estado: "PENDIENTE" })
-        .populate("proyecto")
-        .populate("estudiante");
+      const inscripciones =
+        await InscriptionModel.find(/* { estado: "PENDIENTE" } */)
+          .populate("proyecto")
+          .populate("estudiante");
       return inscripciones;
     },
 
     consultarInscripcionesPorProyecto: async (parent, args) => {
       const inscripcionesPorProyecto = await InscriptionModel.find({
-        proyecto: args.projectId, estado : 'PENDIENTE'
-      }).populate("proyecto")
-        .populate("estudiante")        
+        proyecto: args.projectId,
+        estado: "PENDIENTE",
+      })
+        .populate("proyecto")
+        .populate("estudiante");
       return inscripcionesPorProyecto;
     },
 
-    consultarInscripcionesPorEstudiante :async (parent, args) => {
+    consultarInscripcionesPorEstudiante: async (parent, args) => {
       const inscripcionesPorEstudiante = await InscriptionModel.find({
-        estudiante: args.estudianteId
-      }).populate("proyecto")
+        estudiante: args.estudianteId,
+      })
+        .populate("proyecto")
         .populate("estudiante");
       return inscripcionesPorEstudiante;
-    }        
-    
+    },
   },
   Mutation: {
     crearInscripcion: async (parent, args) => {
@@ -50,13 +53,14 @@ const resolverInscripciones = {
 
     eliminarInscripcionesProyecto: async (parent, args) => {
       const inscripcionesEliminadasPorProyecto =
-        await InscriptionModel.deleteMany({
-          proyecto: args.projectId,
-        }, 
-        {
-          new: true,
-        }
-      );
+        await InscriptionModel.deleteMany(
+          {
+            proyecto: args.projectId,
+          },
+          {
+            new: true,
+          }
+        );
       return inscripcionesEliminadasPorProyecto.deletedCount;
     },
 
