@@ -28,6 +28,27 @@ const resolverInscripciones = {
         .populate("estudiante");
       return inscripcionesPorEstudiante;
     },
+
+    consultarInscripcionesPorLider: async (parent, args, context) => {
+      if (context.userData.rol === "LIDER") {
+        const inscripcionesPorLider = await InscriptionModel.find()
+          .populate("proyecto")
+          .populate("estudiante");
+
+        let inscripcionesFiltradas = [];
+        let c = 0;
+
+        inscripcionesPorLider.forEach((inscripcion) => {
+          if (inscripcion.proyecto.lider + "" === context.userData._id) {
+            inscripcionesFiltradas = [...inscripcionesFiltradas, inscripcion];
+            c += 1;
+          }
+        });
+        return inscripcionesFiltradas;
+      } else {
+        return [];
+      }
+    },
   },
   Mutation: {
     crearInscripcion: async (parent, args) => {
