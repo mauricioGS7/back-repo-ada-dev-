@@ -134,13 +134,21 @@ const resolversProyecto = {
           },
           { new: true }
         );
-        console.log(inscripcionesTerminadas);
+        // console.log(inscripcionesTerminadas);
         return proyectoEditado;
       } else {
         const proyectoEditado = await ProjectModel.findByIdAndUpdate(
           args._id,
           {
             estado: args.estado,
+          },
+          { new: true }
+        );
+        const inscripcionesTerminadas = await InscriptionModel.updateMany(
+          { proyecto: args._id },
+          {
+            estado: "RECHAZADO",
+            fechaEgreso: new Date(),
           },
           { new: true }
         );
