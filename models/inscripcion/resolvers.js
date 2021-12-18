@@ -21,7 +21,6 @@ const resolverInscripciones = {
     consultarInscripcionesPorProyecto: async (parent, args) => {
       const inscripcionesPorProyecto = await InscriptionModel.find({
         proyecto: args.projectId,
-        estado: "PENDIENTE",
       })
         .populate("proyecto")
         .populate("estudiante");
@@ -35,6 +34,27 @@ const resolverInscripciones = {
         .populate("proyecto")
         .populate("estudiante");
       return inscripcionesPorEstudiante;
+    },
+
+    consultarInscripcionesPorLider: async (parent, args, context) => {
+      if (context.userData.rol === "LIDER") {
+        const inscripcionesPorLider = await InscriptionModel.find()
+          .populate("proyecto")
+          .populate("estudiante");
+
+        let inscripcionesFiltradas = [];
+        let c = 0;
+
+        inscripcionesPorLider.forEach((inscripcion) => {
+          if (inscripcion.proyecto.lider + "" === context.userData._id) {
+            inscripcionesFiltradas = [...inscripcionesFiltradas, inscripcion];
+            c += 1;
+          }
+        });
+        return inscripcionesFiltradas;
+      } else {
+        return [];
+      }
     },
   },
   Mutation: {

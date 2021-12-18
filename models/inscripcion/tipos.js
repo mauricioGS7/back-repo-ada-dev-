@@ -16,6 +16,7 @@ const tiposInscripcion = gql`
     consultarInscripcionPorId(_id: String!): [Inscripcion]
     consultarInscripcionesPorProyecto(projectId: String!): [Inscripcion]
     consultarInscripcionesPorEstudiante(estudianteId: String!): [Inscripcion]
+    consultarInscripcionesPorLider: [Inscripcion]
   }
 
   type Mutation {
